@@ -9,8 +9,7 @@ the local network without opening the port to the whole internet.
 
 1. Reads `config.yaml` for API keys and port forward rule templates.
 2. Calls the remote Site Manager API and reads the current WAN IP from
-   `reportedState.wans[].ipv4` (see `sample_output.json` for the response
-   shape).
+   `reportedState.wans[].ipv4` in the response.
 3. Compares it to the IP cached in `state.json`. If unchanged, exits
    immediately.
 4. If changed, fetches the local controller's existing port forward rules
@@ -40,7 +39,7 @@ chmod 600 config.yaml
 Before trusting the cron job, verify both APIs manually:
 
 ```bash
-# remote: should return JSON matching sample_output.json
+# remote: should return {"data": [...]} with a reportedState.wans[] entry
 curl -s -H "X-API-KEY: <remote_key>" https://api.ui.com/v1/hosts | head -c 500
 
 # local: should return {"data": [...]} - adjust the site name if not "default"
