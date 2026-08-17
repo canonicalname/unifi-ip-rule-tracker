@@ -1,0 +1,70 @@
+# Copy this file to config.yaml and fill in real values.
+# config.yaml contains API keys - keep it out of version control and run:
+#   chmod 600 config.yaml
+
+remote:
+  # UniFi Site Manager API key for the remote network (the one with the
+  # dynamic IP we need to track). Generated at unifi.ui.com -> API keys.
+  api_key: "REPLACE_ME"
+
+  # Site Manager API endpoint that lists your consoles/hosts
+  # (data[].reportedState.wans[] entries, each with a "type" and "ipv4").
+  base_url: "https://api.ui.com/v1/hosts"
+
+  # Optional: if your API key has access to more than one host, set this to
+  # the host's "id" field. Leave blank to use the first host returned.
+  host_id: ""
+
+  # Which reportedState.wans[].type to read the ipv4 address from
+  # (e.g. "WAN" or "WAN2" on dual-WAN consoles).
+  wan_key: "WAN"
+
+local:
+  # Base URL of the local UniFi controller (UDM/UDM-Pro/Cloud Gateway/self-hosted).
+  base_url: "https://192.168.1.1"
+
+  # Local API key (Settings -> Control Plane -> Integrations -> API Keys on
+  # newer UniFi OS, sent as X-API-KEY). Verify with:
+  #   curl -sk -H "X-API-KEY: <key>" https://192.168.1.1/proxy/network/api/s/default/rest/portforward
+  # before relying on the cron job - endpoint paths can vary by controller
+  # firmware version, so adjust local.* below if yours differs.
+  api_key: "REPLACE_ME"
+
+  site: "default"
+
+  # Set to false only if the controller uses a self-signed cert you haven't
+  # installed locally and you accept the risk.
+  verify_ssl: true
+
+# Where the last-seen remote IP is cached between runs.
+state_file: "state.json"
+
+# Where update events (and errors) are logged.
+log_file: "ip_rule_tracker.log"
+log_max_bytes: 1048576
+log_backup_count: 3
+
+# Port forward rule templates. Each is matched to an existing UniFi port
+# forward rule by "name" (created if missing). On every remote IP change,
+# the rule's source restriction ("src") is rewritten to "<new_ip>" so
+# only that remote network can reach the forwarded port - everything else
+# in the template is left as configured here.
+port_forward_rules:
+  - name: "remote-office-ssh"
+    enabled: true
+    pfwd_interface: "wan"      # "wan", "wan2", or "both"
+    proto: "tcp"               # "tcp", "udp", or "tcp_udp"
+    dst_port: "22022"          # external port
+    fwd: "192.168.1.50"        # local destination host
+    fwd_port: "22"             # internal port
+    log: false
+
+  # Add more rules here, e.g.:
+  # - name: "remote-office-rdp"
+  #   enabled: true
+  #   pfwd_interface: "wan"
+  #   proto: "tcp"
+  #   dst_port: "33389"
+  #   fwd: "192.168.1.51"
+  #   fwd_port: "3389"
+  #   log: false

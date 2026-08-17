@@ -1,0 +1,8 @@
+.venv/
+config.yaml
+state.json
+state.lock
+*.log
+*.log.*
+__pycache__/
+*.pyc

@@ -1,0 +1,26 @@
+{
+  "data": [
+    {
+      "id": "REDACTED",
+      "hardwareId": "REDACTED",
+      "type": "console",
+      "ipAddress": "203.0.113.42",
+      "owner": true,
+      "reportedState": {
+        "wans": [
+          {
+            "associatedInterface": "ppp0",
+            "enabled": true,
+            "interface": "eth4",
+            "ipv4": "203.0.113.42",
+            "mac": "aa:bb:cc:dd:ee:ff",
+            "plugged": true,
+            "port": 5,
+            "speedType": "2.5GbE",
+            "type": "WAN"
+          }
+        ]
+      }
+    }
+  ]
+}
